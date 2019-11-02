@@ -1,15 +1,20 @@
 import express from 'express';
 import cors from 'cors';
 import './config/env';
+import swaggerUi from 'swagger-ui-express';
 import messages from './utils/messages';
 import response from './utils/response';
 import routes from './routes/index';
+import swaggerDoc from './config/swaggerDoc';
 
 const app = express();
 const router = express.Router();
 
 // Pass router to routes
 routes(router);
+
+// Pass router to swagger middleware
+swaggerDoc(router);
 
 // Allow cross origin access
 app.use(cors());
@@ -26,7 +31,7 @@ app.get('/', (req, res) => response(res, 200, 'success', {
 }));
 
 // Routes
-app.use('/api/v1', router);
+app.use('/api/v1', router, swaggerUi.serve);
 
 // Handle routes not found
 app.use('*', (req, res) => response(res, 404, 'error', {
