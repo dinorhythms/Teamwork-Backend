@@ -2,12 +2,13 @@
   "name": "teamwork-backend",
   "version": "1.0.0",
   "description": "Teamwork is an internal social network for employees of an organization. The goal of this application is to facilitate more interaction between colleagues and promote team bonding.",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha --timeout 120000 src/test/** --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start": "node ./dist/index.js",
     "start:dev": "nodemon src/index.js --exec babel-node",
+    "clean:build": "npm run clean && npm run build",
     "build": "babel src -d dist",
     "clean": "rm -rf dist/*"
   },
