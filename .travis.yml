@@ -1,5 +1,6 @@
 env:
   global:
+    - CC_TEST_REPORTER_ID=8ee170098f87dbf7d2c7109080b16ea42bad563d23e37ddb77cc5bd405aa8b42
     - NODE_ENV=TEST
 
 sudo: false
@@ -9,12 +10,27 @@ language: node_js
 node_js:
   - "node"
 
+cache:
+  directories:
+  - node_modules
+
 install:
   # install deps
   - npm install
+  
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 script:
   - npm test
+  - npm build
 
 after_success:
   - npm run coverage
+  - npm install codeclimate-test-reporter
+  - codeclimate-test-reporter < coverage/lcov.info
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
