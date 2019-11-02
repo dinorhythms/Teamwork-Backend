@@ -2,3 +2,6 @@
  
 # Teamwork-Backend
 Teamwork is an internal social network for employees of an organization. The goal of this application is to facilitate more interaction between colleagues and promote team bonding.
+
+## API Documentation on Heroku
+https://myteamwork.herokuapp.com/api/v1/docs
