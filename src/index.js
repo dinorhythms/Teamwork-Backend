@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import './config/env';
 import swaggerUi from 'swagger-ui-express';
+import trimmer from 'trim-request-body';
+import morganBody from 'morgan-body';
 import messages from './utils/messages';
 import response from './utils/response';
 import routes from './routes/index';
@@ -9,6 +11,11 @@ import swaggerDoc from './config/swaggerDoc';
 
 const app = express();
 const router = express.Router();
+
+// Log http information to console
+if (process.env.NODE_ENV !== 'test') {
+  morganBody(app, { prettify: true });
+}
 
 // Pass router to routes
 routes(router);
@@ -24,6 +31,9 @@ app.use(express.json());
 
 // Parse application/xwww-
 app.use(express.urlencoded({ extended: false }));
+
+// Trim the parsed request body
+app.use(trimmer);
 
 // Handle base route
 app.get('/', (req, res) => response(res, 200, 'success', {
