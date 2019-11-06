@@ -21,10 +21,6 @@ const pool = new Pool({
   connectionString: DATABASE_URL
 });
 
-pool.on('connect', () => {
-  console.log('connected to the Database');
-});
-
 // a generic query, that executes all queries you send to it
 const query = async (text) => new Promise((resolve, reject) => {
   pool
@@ -35,11 +31,6 @@ const query = async (text) => new Promise((resolve, reject) => {
     .catch((err) => {
       reject(err);
     });
-});
-
-pool.on('remove', () => {
-  console.log('client removed');
-  process.exit(0);
 });
 
 export { query };

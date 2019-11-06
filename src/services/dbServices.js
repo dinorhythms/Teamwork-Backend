@@ -62,6 +62,16 @@ const insertRecord = async (table, columns, values) => {
   }
 };
 
+const insertValues = async (table, values) => {
+  try {
+    const insertQuery = `INSERT INTO ${table} VALUES (${values}) RETURNING *`;
+    const { rows } = await query(insertQuery);
+    return rows;
+  } catch (error) {
+    return error;
+  }
+};
+
 const updateRecord = async (table, valueOption, whereOptions) => {
   try {
     const updateQuery = `UPDATE ${table} SET ${valueOption} WHERE ${whereOptions} RETURNING *`;
@@ -83,5 +93,6 @@ const deleteRecord = async (table, id) => {
 };
 
 export {
-  getAll, getById, getAllByOption, getSelectedByOption, updateRecord, insertRecord, deleteRecord
+  getAll, getById, getAllByOption, getSelectedByOption,
+  updateRecord, insertRecord, deleteRecord, insertValues
 };
