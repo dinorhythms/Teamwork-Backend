@@ -4,11 +4,22 @@ import { query } from '../index';
 /**
  * create queries
  */
+
+const queryRole = `CREATE TABLE IF NOT EXISTS
+roles(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  description VARCHAR(256) NOT NULL,
+  createdOn TIMESTAMP DEFAULT current_timestamp,
+  updatedOn TIMESTAMP DEFAULT current_timestamp
+)`;
+
 const queryUser = `CREATE TABLE IF NOT EXISTS
 users(
   id SERIAL PRIMARY KEY,
   email VARCHAR(128) UNIQUE NOT NULL,
   password VARCHAR(128) NOT NULL,
+  roleId INTEGER NOT NULL,
   gender VARCHAR(128) NOT NULL,
   firstName VARCHAR(128) NOT NULL,
   lastName VARCHAR(128) NOT NULL,
@@ -16,7 +27,8 @@ users(
   address VARCHAR(128) NOT NULL,
   jobRole VARCHAR(128) NOT NULL,
   createdOn TIMESTAMP DEFAULT current_timestamp,
-  updatedOn TIMESTAMP DEFAULT current_timestamp
+  updatedOn TIMESTAMP DEFAULT current_timestamp,
+  FOREIGN KEY (roleId) REFERENCES roles (id) ON DELETE CASCADE
 )`;
 
 const queryTag = `CREATE TABLE IF NOT EXISTS
@@ -91,6 +103,7 @@ gifComments(
 
 const createTables = async () => {
   try {
+    await query(queryRole);
     await query(queryUser);
     await query(queryTag);
     await query(queryArticle);
