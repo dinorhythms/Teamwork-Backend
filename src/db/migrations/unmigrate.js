@@ -6,7 +6,7 @@ import { query } from '../index';
  */
 const dropTables = async () => {
   try {
-    const queryRun = 'DROP TABLE IF EXISTS users, articles, gifs, articleComments, gifComments, tags';
+    const queryRun = 'DROP TABLE IF EXISTS roles, users, articles, gifs, articleComments, gifComments, tags';
     await query(queryRun);
   } catch (error) {
     console.log(error);
