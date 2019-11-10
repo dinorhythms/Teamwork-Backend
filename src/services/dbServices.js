@@ -9,7 +9,7 @@ const getAll = async (table) => {
     }
     return null;
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -35,7 +35,7 @@ const getAllByOption = async (table, option) => {
     }
     return null;
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -48,7 +48,7 @@ const getSelectedByOption = async (table, columns, option) => {
     }
     return null;
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -56,19 +56,9 @@ const insertRecord = async (table, columns, values) => {
   try {
     const insertQuery = `INSERT INTO ${table} ( ${columns} ) VALUES (${values}) RETURNING *`;
     const { rows } = await query(insertQuery);
-    return rows;
+    return rows[0];
   } catch (error) {
-    return error;
-  }
-};
-
-const insertValues = async (table, values) => {
-  try {
-    const insertQuery = `INSERT INTO ${table} VALUES (${values}) RETURNING *`;
-    const { rows } = await query(insertQuery);
-    return rows;
-  } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -78,7 +68,7 @@ const updateRecord = async (table, valueOption, whereOptions) => {
     const { rows } = await query(updateQuery);
     return rows[0];
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -88,11 +78,11 @@ const deleteRecord = async (table, id) => {
     const { rows } = await query(deleteQuery);
     return rows[0];
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
 export {
   getAll, getById, getAllByOption, getSelectedByOption,
-  updateRecord, insertRecord, deleteRecord, insertValues
+  updateRecord, insertRecord, deleteRecord
 };

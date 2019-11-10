@@ -1,16 +1,74 @@
 import authController from '../controllers/authController';
+import { checkToken } from '../middlewares/userMiddlewares';
+import authorize from '../middlewares/authorizer';
 import validate from '../middlewares/validator';
+import roles from '../utils/roles';
 import {
-  signInSchema
+  signInSchema, signUpSchema
 } from '../validation/userSchema';
 
 const {
-  signIn,
+  signIn, signUp
 } = authController;
 
-const authRoute = (router) => {
-  router.route('/auth/signin')
+const { ADMIN } = roles;
 
+const authRoute = (router) => {
+  router.route('/auth/signup')
+  /**
+     * @swagger
+     * components:
+     *  schemas:
+     *    User:
+     *      properties:
+     *        email:
+     *          type: string
+     *        password:
+     *          type: string
+     *        firstname:
+     *          type: string
+     *        lastname:
+     *         type: string
+     *        gender:
+     *          type: string
+     *        department:
+     *          type: string
+     *        address:
+     *         type: string
+     *        jobrole:
+     *          type: string
+     */
+
+  /**
+     * @swagger
+     * /api/v1/auth/signup:
+     *   post:
+     *     tags:
+     *       - Users
+     *     description: Create a new user account
+     *     produces:
+     *       - application/json
+     *     requestBody:
+     *      description: User data object
+     *      required: true
+     *      content:
+     *       application/json:
+     *          schema:
+     *            $ref: '#/components/schemas/User'
+     *     responses:
+     *       201:
+     *         description: User created successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .post(checkToken, authorize(ADMIN), validate(signUpSchema), signUp);
+
+  router.route('/auth/signin')
   /**
        * @swagger
        * components:

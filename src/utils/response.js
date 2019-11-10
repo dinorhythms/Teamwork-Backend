@@ -17,4 +17,9 @@ const response = (res, status, statusMessage, data) => res.status(status).json({
   data,
 });
 
+export const errorResponse = (res, status, statusMessage, error) => res.status(status).json({
+  status: statusMessage,
+  error,
+});
+
 export default response;
