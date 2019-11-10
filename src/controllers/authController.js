@@ -1,11 +1,18 @@
-import { generateToken, comparePasswords } from '../services/authServices';
-import response from '../utils/response';
+import bcrypt from 'bcrypt';
+import { generateToken, comparePasswords, hashPassword } from '../services/authServices';
+import response, { errorResponse } from '../utils/response';
 import messages from '../utils/messages';
 
-import { getAllByOption } from '../services/dbServices';
+import { getAllByOption, insertRecord } from '../services/dbServices';
+import roles from '../utils/roles';
 
-const { incorrectPassword, userNotFound } = messages;
+const {
+  incorrectPassword, userNotFound, emailExists, signUpSuccess
+} = messages;
 const userModel = 'users';
+
+const { EMPLOYEE } = roles;
+const salt = bcrypt.genSaltSync(parseInt(process.env.SALT_ROUNDS, 10));
 
 /**
  * user signin function in auth controller
@@ -28,6 +35,36 @@ const signIn = async (req, res) => {
   }
 };
 
+/**
+ * user signup controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const signUp = async (req, res) => {
+  try {
+    const {
+      firstname, lastname, email, password, gender, address, jobrole, department
+    } = req.body;
+    const exists = await getAllByOption(userModel, `email='${email}'`);
+    if (exists) return response(res, 400, 'error', { message: emailExists });
+    const column = 'email, password, roleid, gender, firstname, lastname, department, address, jobrole, createdon, updatedon';
+    const user = `'${email}', '${hashPassword(password, salt)}', '${EMPLOYEE}', '${gender}', '${firstname}', '${lastname}', '${department}', '${address}', '${jobrole}', 'NOW()', 'NOW()'`;
+    const createdUser = await insertRecord(userModel, column, user);
+    const userData = {
+      userId: createdUser.id,
+      message: signUpSuccess,
+      email: createdUser.email,
+      firstName: createdUser.firstname,
+      lastName: createdUser.lastname,
+      token: generateToken({ id: createdUser.id, roleId: createdUser.roleid }),
+    };
+    return response(res, 200, 'success', userData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
-  signIn
+  signIn, signUp
 };

@@ -19,30 +19,6 @@ const JoiValidation = {
   },
 
   /**
-   * date schema creator
-   * @returns {Object} - date schema
-  */
-  validateDate() {
-    return Joi.date();
-  },
-
-  /**
-   * number schema creator
-   * @returns {Object} - number schema
-  */
-  validateNumber() {
-    return Joi.number();
-  },
-
-  /**
-   * object schema creator
-   * @returns {Object} - object schema
-  */
-  validArray() {
-    return Joi.array();
-  },
-
-  /**
    * object schema creator
    * @returns {Object} - object schema
   */
