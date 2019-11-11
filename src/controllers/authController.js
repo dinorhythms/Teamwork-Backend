@@ -28,7 +28,7 @@ const signIn = async (req, res) => {
     const { id: userId, password: hash, ...data } = user[0];
     const passwordsMatch = await comparePasswords(password, hash);
     if (!passwordsMatch) return response(res, 400, 'error', { message: incorrectPassword });
-    const token = generateToken({ id: data.id, roleId: data.roleid });
+    const token = generateToken({ id: userId, roleId: data.roleid });
     return response(res, 200, 'success', { userId, ...data, token });
   } catch (error) {
     response(res, 500, 'error', { error: error.message });

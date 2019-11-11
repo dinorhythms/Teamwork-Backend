@@ -1,6 +1,7 @@
 import messages from '../utils/messages';
 import response from '../utils/response';
 import authRoute from './auth';
+import articlesRoute from './articles';
 
 const routes = (router) => {
   router
@@ -37,8 +38,11 @@ const routes = (router) => {
       message: messages.apiV1Welcome,
     }));
 
-  // user routes
+  // auth routes
   authRoute(router);
+
+  // articles routes
+  articlesRoute(router);
 };
 
 export default routes;

@@ -44,7 +44,7 @@ const authRoute = (router) => {
      * /api/v1/auth/signup:
      *   post:
      *     tags:
-     *       - Users
+     *       - Auth
      *     description: Create a new user account
      *     produces:
      *       - application/json
@@ -86,7 +86,7 @@ const authRoute = (router) => {
        * /api/v1/auth/signin:
        *   post:
        *     tags:
-       *       - Users
+       *       - Auth
        *     description: Authenticate a user with email and password
        *     produces:
        *       - application/json

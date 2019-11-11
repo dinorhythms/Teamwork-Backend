@@ -26,6 +26,14 @@ const JoiValidation = {
     return Joi.boolean();
   },
 
+  /**
+   * number schema creator
+   * @returns {Object} - number schema
+  */
+  validateNumber() {
+    return Joi.number();
+  },
+
 };
 
 export default JoiValidation;

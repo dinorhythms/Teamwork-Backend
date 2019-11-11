@@ -69,9 +69,10 @@ describe('AUTH', () => {
   });
   describe('POST /auth/signup', () => {
     const signupEndpoint = `${BACKEND_BASE_URL}/auth/signup`;
-    let adminToken;
+    let adminToken, userToken;
     before(async () => {
-      adminToken = generateToken({ id: validUserReg.id, roleId: 1 });
+      adminToken = generateToken({ id: 1, roleId: 1 });
+      userToken = generateToken({ id: 2, roleId: 2 });
     });
 
     it('should create a user and generate jwt', (done) => {
@@ -84,6 +85,19 @@ describe('AUTH', () => {
           const { data } = res.body;
           expect(data).property('token');
           expect(data).property('email');
+          done(err);
+        });
+    });
+
+    it('should not allow employees create a user', (done) => {
+      chai
+        .request(app)
+        .post(signupEndpoint)
+        .set('authorization', userToken)
+        .send(validUserReg)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
           done(err);
         });
     });

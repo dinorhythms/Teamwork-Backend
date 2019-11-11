@@ -11,7 +11,6 @@ const { forbidden } = messages;
  */
 const authorize = (permitedRoles) => (req, res, next) => {
   const { roleId } = req.decoded;
-
   if (permitedRoles === roleId || roleId === 1) {
     return next();
   }
