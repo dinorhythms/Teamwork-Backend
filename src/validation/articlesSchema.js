@@ -13,6 +13,10 @@ const updateArticleSchema = Joi.object({
   articleId: JoiValidator.validateString().required(),
 });
 
+const deleteArticleSchema = Joi.object({
+  articleId: JoiValidator.validateString().required(),
+});
+
 export {
-  createArticleSchema, updateArticleSchema
+  createArticleSchema, updateArticleSchema, deleteArticleSchema
 };

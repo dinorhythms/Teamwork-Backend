@@ -2,11 +2,11 @@ import response, { errorResponse } from '../utils/response';
 import messages from '../utils/messages';
 
 import {
-  getAllByOption, insertRecord, updateRecord, getById
+  getAllByOption, insertRecord, updateRecord, getById, deleteRecord
 } from '../services/dbServices';
 
 const {
-  articleExists, articleCreated, invalidTagId, articleUpdated
+  articleExists, articleCreated, invalidTagId, articleUpdated, articleDeleted
 } = messages;
 const articleModel = 'articles';
 const tagModel = 'tags';
@@ -79,6 +79,25 @@ const update = async (req, res) => {
   }
 };
 
+const deleteArticle = async (req, res) => {
+  try {
+    const { articleId } = req.params;
+    const updatedArticle = await deleteRecord(articleModel, articleId);
+    const articleData = {
+      message: articleDeleted,
+      articleId: updatedArticle.id,
+      title: updatedArticle.title,
+      article: updatedArticle.article,
+      tagId: updatedArticle.tagid,
+      createdOn: updatedArticle.createdon,
+      updatedOn: updatedArticle.updatedon
+    };
+    return response(res, 201, 'success', articleData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
-  create, update
+  create, update, deleteArticle
 };

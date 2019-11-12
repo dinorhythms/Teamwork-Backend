@@ -1,12 +1,16 @@
 import articlesController from '../controllers/articlesController';
 import { checkToken } from '../middlewares/userMiddlewares';
 import authorize from '../middlewares/authorizer';
-import { canUpdateArticle } from '../middlewares/articlesMiddlewares';
+import { canManipulateArticle } from '../middlewares/articlesMiddlewares';
 import validate from '../middlewares/validator';
 import roles from '../utils/roles';
-import { createArticleSchema, updateArticleSchema } from '../validation/articlesSchema';
+import {
+  createArticleSchema,
+  updateArticleSchema,
+  deleteArticleSchema
+} from '../validation/articlesSchema';
 
-const { create, update } = articlesController;
+const { create, update, deleteArticle } = articlesController;
 
 const { EMPLOYEE } = roles;
 
@@ -81,12 +85,14 @@ const articlesRoute = (router) => {
      *   patch:
      *     tags:
      *       - Articles
-     *     description: Create a new article
+     *     description: Update article
      *     parameters:
      *       - in: path
      *         name: articleId
-     *         type: integer
      *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
      *     produces:
      *       - application/json
      *     requestBody:
@@ -111,8 +117,45 @@ const articlesRoute = (router) => {
       checkToken,
       authorize(EMPLOYEE),
       validate(updateArticleSchema),
-      canUpdateArticle,
+      canManipulateArticle,
       update
+    );
+
+  router
+    .route('/articles/:articleId')
+  /**
+     * @swagger
+     * /api/v1/articles/{articleId}:
+     *   delete:
+     *     tags:
+     *       - Articles
+     *     description: Delete article
+     *     parameters:
+     *       - in: path
+     *         name: articleId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       201:
+     *         description: Article deleted successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .delete(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(deleteArticleSchema),
+      canManipulateArticle,
+      deleteArticle
     );
 };
 

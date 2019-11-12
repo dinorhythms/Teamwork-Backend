@@ -176,4 +176,34 @@ describe('ARTICLES', () => {
         });
     });
   });
+
+  describe('DELETE /articles/articleId', () => {
+    const deleteArticleEndpoint = `${BACKEND_BASE_URL}/articles/1`;
+    it('should allow only author employee delete article', (done) => {
+      chai
+        .request(app)
+        .delete(deleteArticleEndpoint)
+        .set('authorization', userToken)
+        .send(validArticleTwo)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should allow employee delete article', (done) => {
+      chai
+        .request(app)
+        .delete(deleteArticleEndpoint)
+        .set('authorization', adminToken)
+        .send(validArticle)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('articleId');
+          done(err);
+        });
+    });
+  });
 });
