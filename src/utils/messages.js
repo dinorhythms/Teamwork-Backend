@@ -6,6 +6,7 @@ const messages = {
   invalidTagId: 'Invalid tag Id',
   articleExists: 'You have an existing article with same title, please check',
   articleCreated: 'Article successfully posted',
+  articleUpdated: 'Article successfully updated',
   signUpSuccess: 'User account successfully created',
   userNotFound: 'User not found, please check your email address',
   incorrectPassword: 'Incorrect password',
