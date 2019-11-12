@@ -7,6 +7,12 @@ const createArticleSchema = Joi.object({
   tagid: JoiValidator.validateNumber().integer().required(),
 });
 
+const updateArticleSchema = Joi.object({
+  title: JoiValidator.validateString().min(10).max(128).required(),
+  article: JoiValidator.validateString().min(10).required(),
+  articleId: JoiValidator.validateString().required(),
+});
+
 export {
-  createArticleSchema
+  createArticleSchema, updateArticleSchema
 };
