@@ -14,13 +14,13 @@ const articleModel = 'articles';
  * @returns {Object} response object
  * @description checks if the user is allowed to update article
  */
-export const canUpdateArticle = async (req, res, next) => {
+export const canManipulateArticle = async (req, res, next) => {
   try {
     const { decoded } = req;
     const { id: userId } = decoded;
     const { articleId } = req.params;
     const article = await getById(articleModel, articleId);
-    if (userId === article.authorid) {
+    if (article && userId === article.authorid) {
       return next();
     }
     return errorResponse(res, 403, 'error', forbidden);
