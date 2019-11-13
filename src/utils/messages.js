@@ -8,6 +8,7 @@ const messages = {
   articleCreated: 'Article successfully posted',
   articleUpdated: 'Article successfully updated',
   articleDeleted: 'Article successfully deleted',
+  gifExists: 'You have an existing gif with same title, please check',
   signUpSuccess: 'User account successfully created',
   userNotFound: 'User not found, please check your email address',
   incorrectPassword: 'Incorrect password',
@@ -21,6 +22,8 @@ const messages = {
   forbidden: 'You are not authorized to perform this operation',
   unauthorized: 'You do not have authorization',
   commentAlreadyDeleted: 'Comment already deleted',
+  gifCreated: 'GIF image successfully posted',
+  imageUploadError: 'GIF upload error',
 };
 
 export default messages;

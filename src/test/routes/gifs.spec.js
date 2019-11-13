@@ -1,0 +1,155 @@
+import {
+  app,
+  chai,
+  expect,
+  testImage,
+  sinon,
+  testPngImage
+} from '../testHelpers/config';
+
+import cloudinaryMock from '../mockData/cloudinaryMock';
+import { generateToken } from '../../services/authServices';
+import { uploader } from '../../config/cloudinary';
+
+const BACKEND_BASE_URL = '/api/v1';
+let adminToken, userToken;
+
+describe('GIFS', () => {
+  describe('POST /gifs', () => {
+    const createGifEndpoint = `${BACKEND_BASE_URL}/gifs`;
+    before(async () => {
+      adminToken = generateToken({ id: 1, roleId: 1 });
+      userToken = generateToken({ id: 2, roleId: 2 });
+    });
+
+    it('should allow admin create gif', (done) => {
+      const stub = sinon
+        .stub(uploader, 'upload')
+        .callsFake(() => Promise.resolve(cloudinaryMock.response));
+      chai
+        .request(app)
+        .post(createGifEndpoint)
+        .set('authorization', adminToken)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', testImage, 'giphy.gif')
+        .field('title', 'testing image upload with postman admin')
+        .field('tagid', 1)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body)
+            .to.have.property('status')
+            .that.equal('success');
+          expect(data).to.have.property('gifId');
+          done(err);
+          stub.restore();
+        });
+    });
+
+    it('should allow user create gif', (done) => {
+      const stub = sinon
+        .stub(uploader, 'upload')
+        .callsFake(() => Promise.resolve(cloudinaryMock.response));
+      chai
+        .request(app)
+        .post(createGifEndpoint)
+        .set('authorization', userToken)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', testImage, 'giphy.gif')
+        .field('title', 'testing image upload with postman user')
+        .field('tagid', 1)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body)
+            .to.have.property('status')
+            .that.equal('success');
+          expect(data).to.have.property('gifId');
+          done(err);
+          stub.restore();
+        });
+    });
+
+    it('should not allow user create gif with existing title', (done) => {
+      const stub = sinon
+        .stub(uploader, 'upload')
+        .callsFake(() => Promise.resolve(cloudinaryMock.response));
+      chai
+        .request(app)
+        .post(createGifEndpoint)
+        .set('authorization', userToken)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', testImage, 'giphy.gif')
+        .field('title', 'testing image upload with postman user')
+        .field('tagid', 1)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body)
+            .to.have.property('status')
+            .that.equal('error');
+          done(err);
+          stub.restore();
+        });
+    });
+
+    it('should not allow user create gif with wrong tagId', (done) => {
+      const stub = sinon
+        .stub(uploader, 'upload')
+        .callsFake(() => Promise.resolve(cloudinaryMock.response));
+      chai
+        .request(app)
+        .post(createGifEndpoint)
+        .set('authorization', userToken)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', testImage, 'giphy.gif')
+        .field('title', 'testing image upload with postman user with bad tag')
+        .field('tagid', 0)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body)
+            .to.have.property('status')
+            .that.equal('error');
+          done(err);
+          stub.restore();
+        });
+    });
+
+    it('should not allow user create png image', (done) => {
+      const stub = sinon
+        .stub(uploader, 'upload')
+        .callsFake(() => Promise.resolve(cloudinaryMock.response));
+      chai
+        .request(app)
+        .post(createGifEndpoint)
+        .set('authorization', userToken)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', testPngImage, 'test.png')
+        .field('title', 'testing image upload with postman user with png')
+        .field('tagid', 2)
+        .end((err, res) => {
+          expect(res.status).to.equal(500);
+          done(err);
+          stub.restore();
+        });
+    });
+
+    it('should show server error', (done) => {
+      const stub = sinon
+        .stub(uploader, 'upload')
+        .callsFake(() => Promise.reject(new Error('Internal server error')));
+      chai
+        .request(app)
+        .post(createGifEndpoint)
+        .set('authorization', userToken)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', testImage, 'giphy.gif')
+        .field('title', 'testing image upload with postman')
+        .field('tagid', 2)
+        .end((err, res) => {
+          expect(res.status).to.equal(500);
+          done(err);
+          stub.restore();
+        });
+    });
+  });
+});
