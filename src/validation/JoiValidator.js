@@ -19,14 +19,6 @@ const JoiValidation = {
   },
 
   /**
-   * object schema creator
-   * @returns {Object} - object schema
-  */
-  validateBoolean() {
-    return Joi.boolean();
-  },
-
-  /**
    * number schema creator
    * @returns {Object} - number schema
   */

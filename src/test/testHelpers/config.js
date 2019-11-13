@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
@@ -15,6 +17,10 @@ chai.use(chaiHttp);
 chai.use(sinonChai);
 chai.should();
 
+const testImage = fs.readFileSync(path.join(__dirname, '../../../testImages/giphy.gif'));
+const testPngImage = fs.readFileSync(path.join(__dirname, '../../../testImages/test.png'));
+
+
 export {
   app,
   messages,
@@ -24,4 +30,6 @@ export {
   mockRequest,
   mockResponse,
   BACKEND_BASE_URL,
+  testImage,
+  testPngImage,
 };

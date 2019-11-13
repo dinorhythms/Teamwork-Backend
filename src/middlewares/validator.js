@@ -1,20 +1,27 @@
 import Joi from '@hapi/joi';
-import response, { errorResponse } from '../utils/response';
+import { errorResponse } from '../utils/response';
 
 export default (schema) => (req, res, next) => {
   if (!schema) return next();
 
-  const { body, params, query } = req;
+  const {
+    body, params, query, imageUrl
+  } = req;
 
-  Joi.validate({ ...body, ...params, ...query }, schema, {
+  Joi.validate({
+    ...body, ...params, ...query, imageUrl
+  }, schema, {
     abortEarly: false,
     stripUnknown: true,
     allowUnknown: true
-  }).then(() => next())
+  })
+    .then(() => next())
     .catch((err) => {
       const errors = {};
       err.details.forEach((e) => {
-        errors[e.message.split(' ', 1)[0].replace(/['"]/g, '')] = e.message.replace(/['"]/g, '');
+        errors[
+          e.message.split(' ', 1)[0].replace(/['"]/g, '')
+        ] = e.message.replace(/['"]/g, '');
       });
       return errorResponse(res, 400, 'error', errors);
     });
