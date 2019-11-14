@@ -8,6 +8,8 @@ const messages = {
   articleCreated: 'Article successfully posted',
   articleUpdated: 'Article successfully updated',
   articleDeleted: 'Article successfully deleted',
+  articleNotFound: 'Article not found',
+  commentCreated: 'Comment successfully created',
   gifExists: 'You have an existing gif with same title, please check',
   signUpSuccess: 'User account successfully created',
   userNotFound: 'User not found, please check your email address',

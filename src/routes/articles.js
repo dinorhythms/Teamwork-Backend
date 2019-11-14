@@ -1,4 +1,5 @@
 import articlesController from '../controllers/articlesController';
+import commentsController from '../controllers/commentsController';
 import { checkToken } from '../middlewares/userMiddlewares';
 import authorize from '../middlewares/authorizer';
 import { canManipulateArticle } from '../middlewares/articlesMiddlewares';
@@ -7,10 +8,12 @@ import roles from '../utils/roles';
 import {
   createArticleSchema,
   updateArticleSchema,
-  deleteArticleSchema
+  deleteArticleSchema,
+  createArticlecommentSchema
 } from '../validation/articlesSchema';
 
 const { create, update, deleteArticle } = articlesController;
+const { createdArticleComment } = commentsController;
 
 const { EMPLOYEE } = roles;
 
@@ -123,7 +126,7 @@ const articlesRoute = (router) => {
 
   router
     .route('/articles/:articleId')
-  /**
+    /**
      * @swagger
      * /api/v1/articles/{articleId}:
      *   delete:
@@ -156,6 +159,59 @@ const articlesRoute = (router) => {
       validate(deleteArticleSchema),
       canManipulateArticle,
       deleteArticle
+    );
+
+  router
+    .route('/articles/:articleId/comment')
+    /**
+     * @swagger
+     * components:
+     *  schemas:
+     *    ArticleComment:
+     *      properties:
+     *        comment:
+     *          type: string
+     */
+
+  /**
+     * @swagger
+     * /api/v1/articles/{articleId}/comment:
+     *   post:
+     *     tags:
+     *       - Comments
+     *     description: Create a new article comment
+     *     parameters:
+     *       - in: path
+     *         name: articleId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
+     *     produces:
+     *       - application/json
+     *     requestBody:
+     *      description: Comment data object
+     *      required: true
+     *      content:
+     *       application/json:
+     *          schema:
+     *            $ref: '#/components/schemas/ArticleComment'
+     *     responses:
+     *       201:
+     *         description: Article created successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .post(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(createArticlecommentSchema),
+      createdArticleComment
     );
 };
 

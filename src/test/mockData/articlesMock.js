@@ -14,4 +14,7 @@ export default {
     article: 'It is a priviledge for me to have an opportunity to post article on this platform',
     tagid: 0
   },
+  validArticleComment: {
+    comment: 'my first article of the day'
+  },
 };
