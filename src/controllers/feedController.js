@@ -18,11 +18,13 @@ const getFeed = async (req, res) => {
     let fd;
     const articles = await getSelectedByOption(
       articleModel,
-      'id, createdon, title, article, authorid, flagged, tagid'
+      'id, createdon, title, article, authorid, flagged, tagid',
+      ''
     );
     const gifs = await getSelectedByOption(
       gifModel,
-      'id, createdon, title, imageurl as url, authorid, flagged, tagid'
+      'id, createdon, title, imageurl as url, authorid, flagged, tagid',
+      ''
     );
     if (gifs && articles) fd = [...articles, ...gifs];
     if (!gifs && articles) fd = [...articles];

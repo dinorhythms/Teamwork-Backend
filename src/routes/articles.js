@@ -9,10 +9,13 @@ import {
   createArticleSchema,
   updateArticleSchema,
   deleteArticleSchema,
-  createArticleCommentSchema
+  createArticleCommentSchema,
+  getArticleSchema
 } from '../validation/articlesSchema';
 
-const { create, update, deleteArticle } = articlesController;
+const {
+  create, update, deleteArticle, getArticle
+} = articlesController;
 const { createArticleComment } = commentsController;
 
 const { EMPLOYEE } = roles;
@@ -212,6 +215,52 @@ const articlesRoute = (router) => {
       authorize(EMPLOYEE),
       validate(createArticleCommentSchema),
       createArticleComment
+    );
+
+  router
+    .route('/articles/:articleId')
+    /**
+     * @swagger
+     * components:
+     *  schemas:
+     *    ArticleComment:
+     *      properties:
+     *        comment:
+     *          type: string
+     */
+
+  /**
+     * @swagger
+     * /api/v1/articles/{articleId}:
+     *   get:
+     *     tags:
+     *       - Articles
+     *     description: Get article by Id
+     *     parameters:
+     *       - in: path
+     *         name: articleId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: comment created successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .get(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(getArticleSchema),
+      getArticle
     );
 };
 
