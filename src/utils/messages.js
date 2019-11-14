@@ -10,6 +10,7 @@ const messages = {
   articleDeleted: 'Article successfully deleted',
   articleNotFound: 'Article not found',
   gifNotFound: 'Gif post not found',
+  feedNotFound: 'feed not found',
   commentCreated: 'Comment successfully created',
   gifExists: 'You have an existing gif with same title, please check',
   signUpSuccess: 'User account successfully created',
