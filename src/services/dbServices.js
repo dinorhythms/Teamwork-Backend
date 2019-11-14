@@ -26,9 +26,9 @@ const getAllByOption = async (table, option) => {
   }
 };
 
-const getSelectedByOption = async (table, columns) => {
+const getSelectedByOption = async (table, columns, option = '') => {
   try {
-    const getOptionQuery = `SELECT ${columns} FROM ${table}`;
+    const getOptionQuery = `SELECT ${columns} FROM ${table} ${option}`;
     const { rows, rowCount } = await query(getOptionQuery);
     if (rowCount > 0) {
       return rows;

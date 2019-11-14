@@ -251,4 +251,33 @@ describe('ARTICLES', () => {
         });
     });
   });
+
+  describe('GET /articles/articleId/', () => {
+    const getArticleEndpoint = `${BACKEND_BASE_URL}/articles/2`;
+    const badGetArticleEndpoint = `${BACKEND_BASE_URL}/articles/20`;
+    it('should allow employee get article', (done) => {
+      chai
+        .request(app)
+        .get(getArticleEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comments');
+          done(err);
+        });
+    });
+    it('should return article not found', (done) => {
+      chai
+        .request(app)
+        .get(badGetArticleEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
 });

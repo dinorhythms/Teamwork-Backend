@@ -2,14 +2,15 @@ import response, { errorResponse } from '../utils/response';
 import messages from '../utils/messages';
 
 import {
-  getAllByOption, insertRecord, updateRecord, getById, deleteRecord
+  getAllByOption, insertRecord, updateRecord, getById, deleteRecord, getSelectedByOption
 } from '../services/dbServices';
 
 const {
-  articleExists, articleCreated, invalidTagId, articleUpdated, articleDeleted
+  articleExists, articleCreated, invalidTagId, articleUpdated, articleDeleted, articleNotFound
 } = messages;
 const articleModel = 'articles';
 const tagModel = 'tags';
+const commentModel = ' articlecomments';
 
 /**
  * article create controller
@@ -79,7 +80,6 @@ const update = async (req, res) => {
   }
 };
 
-
 /**
  * article delete controller
  * @param {Object} req - server request
@@ -105,6 +105,31 @@ const deleteArticle = async (req, res) => {
   }
 };
 
+/**
+ * get article controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const getArticle = async (req, res) => {
+  try {
+    const { articleId } = req.params;
+    const article = await getById(articleModel, articleId);
+    const comments = await getSelectedByOption(commentModel, 'id AS commentId, comment, authorid', `WHERE articleid='${articleId}'`) || [];
+    if (!article) return errorResponse(res, 400, 'error', articleNotFound);
+    const articleData = {
+      id: article.id,
+      createdOn: article.createdon,
+      title: article.title,
+      article: article.article,
+      comments
+    };
+    return response(res, 200, 'success', articleData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
-  create, update, deleteArticle
+  create, update, deleteArticle, getArticle
 };
