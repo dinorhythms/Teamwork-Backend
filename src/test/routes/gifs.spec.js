@@ -7,9 +7,14 @@ import {
   testPngImage
 } from '../testHelpers/config';
 
+import articlesMock from '../mockData/articlesMock';
 import cloudinaryMock from '../mockData/cloudinaryMock';
 import { generateToken } from '../../services/authServices';
 import { uploader } from '../../config/cloudinary';
+
+const {
+  validArticleComment
+} = articlesMock;
 
 const BACKEND_BASE_URL = '/api/v1';
 let adminToken, userToken;
@@ -189,6 +194,51 @@ describe('GIFS', () => {
           expect(data).to.have.property('gifId');
           done(err);
           stub.restore();
+        });
+    });
+  });
+
+  describe('POST /gifs/gifId/{comment}', () => {
+    const createGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/2/comment`;
+    const badcreateGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/20/comment`;
+    it('should allow admin post gif comment', (done) => {
+      chai
+        .request(app)
+        .post(createGifCommentEndpoint)
+        .set('authorization', adminToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comment');
+          done(err);
+        });
+    });
+    it('should allow user/employee post gif comment', (done) => {
+      chai
+        .request(app)
+        .post(createGifCommentEndpoint)
+        .set('authorization', userToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comment');
+          done(err);
+        });
+    });
+    it('should return gif post not found', (done) => {
+      chai
+        .request(app)
+        .post(badcreateGifCommentEndpoint)
+        .set('authorization', userToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
         });
     });
   });

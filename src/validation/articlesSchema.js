@@ -17,11 +17,11 @@ const deleteArticleSchema = Joi.object({
   articleId: JoiValidator.validateString().required(),
 });
 
-const createArticlecommentSchema = Joi.object({
+const createArticleCommentSchema = Joi.object({
   comment: JoiValidator.validateString().min(2).max(256).required(),
   articleId: JoiValidator.validateString().required(),
 });
 
 export {
-  createArticleSchema, updateArticleSchema, deleteArticleSchema, createArticlecommentSchema
+  createArticleSchema, updateArticleSchema, deleteArticleSchema, createArticleCommentSchema
 };
