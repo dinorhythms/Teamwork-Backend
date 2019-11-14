@@ -7,7 +7,11 @@ const createGifSchema = Joi.object({
     .max(128)
     .required(),
   tagid: JoiValidator.validateNumber().required(),
-  imageUrl: JoiValidator.validateString().required()
+  filename: JoiValidator.validateString().required()
 });
 
-export { createGifSchema };
+const deleteGifSchema = Joi.object({
+  gifId: JoiValidator.validateNumber().required(),
+});
+
+export { createGifSchema, deleteGifSchema };

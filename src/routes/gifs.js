@@ -1,14 +1,14 @@
 import gifsController from '../controllers/gifsController';
 import { checkToken } from '../middlewares/userMiddlewares';
 import authorize from '../middlewares/authorizer';
-// import { canManipulateArticle } from '../middlewares/articlesMiddlewares';
+import { canManipulateGifs } from '../middlewares/gifsMiddlewares';
 import multerUploads from '../middlewares/multer';
 import validate from '../middlewares/validator';
-import uploadImage from '../middlewares/imageUploader';
+import uploadImage, { deleteImage } from '../middlewares/imageUploader';
 import roles from '../utils/roles';
-import { createGifSchema } from '../validation/gifsSchema';
+import { createGifSchema, deleteGifSchema } from '../validation/gifsSchema';
 
-const { create } = gifsController;
+const { create, deleteGif } = gifsController;
 
 const { EMPLOYEE } = roles;
 
@@ -70,9 +70,47 @@ const gifsRoute = (router) => {
       checkToken,
       authorize(EMPLOYEE),
       multerUploads,
-      uploadImage,
       validate(createGifSchema),
+      uploadImage,
       create
+    );
+
+  router
+    .route('/gifs/:gifId')
+    /**
+     * @swagger
+     * /api/v1/gifs/{gifId}:
+     *   delete:
+     *     tags:
+     *       - Gifs
+     *     description: Delete gif
+     *     parameters:
+     *       - in: path
+     *         name: gifId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Gif ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       201:
+     *         description: Gif deleted successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .delete(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(deleteGifSchema),
+      canManipulateGifs,
+      deleteImage,
+      deleteGif
     );
 };
 
