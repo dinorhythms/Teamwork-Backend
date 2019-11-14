@@ -209,6 +209,7 @@ describe('ARTICLES', () => {
 
   describe('POST /articles/articleId/{comment}', () => {
     const createArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/2/comment`;
+    const badcreateArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/20/comment`;
     it('should allow admin post article comment', (done) => {
       chai
         .request(app)
@@ -223,10 +224,6 @@ describe('ARTICLES', () => {
           done(err);
         });
     });
-  });
-
-  describe('POST /articles/articleId/{comment}', () => {
-    const createArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/2/comment`;
     it('should allow user/employee post article comment', (done) => {
       chai
         .request(app)
@@ -238,6 +235,18 @@ describe('ARTICLES', () => {
           expect(res.status).to.equal(201);
           expect(res.body).to.have.property('status').that.equal('success');
           expect(data).to.have.property('comment');
+          done(err);
+        });
+    });
+    it('should return article not found', (done) => {
+      chai
+        .request(app)
+        .post(badcreateArticleCommentEndpoint)
+        .set('authorization', userToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
           done(err);
         });
     });

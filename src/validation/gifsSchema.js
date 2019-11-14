@@ -14,4 +14,9 @@ const deleteGifSchema = Joi.object({
   gifId: JoiValidator.validateNumber().required(),
 });
 
-export { createGifSchema, deleteGifSchema };
+const createGifCommentSchema = Joi.object({
+  comment: JoiValidator.validateString().min(2).max(256).required(),
+  gifId: JoiValidator.validateString().required(),
+});
+
+export { createGifSchema, deleteGifSchema, createGifCommentSchema };

@@ -9,11 +9,11 @@ import {
   createArticleSchema,
   updateArticleSchema,
   deleteArticleSchema,
-  createArticlecommentSchema
+  createArticleCommentSchema
 } from '../validation/articlesSchema';
 
 const { create, update, deleteArticle } = articlesController;
-const { createdArticleComment } = commentsController;
+const { createArticleComment } = commentsController;
 
 const { EMPLOYEE } = roles;
 
@@ -198,7 +198,7 @@ const articlesRoute = (router) => {
      *            $ref: '#/components/schemas/ArticleComment'
      *     responses:
      *       201:
-     *         description: Article created successfully
+     *         description: comment created successfully
      *       403:
      *         description: Unauthorized
      *       500:
@@ -210,8 +210,8 @@ const articlesRoute = (router) => {
     .post(
       checkToken,
       authorize(EMPLOYEE),
-      validate(createArticlecommentSchema),
-      createdArticleComment
+      validate(createArticleCommentSchema),
+      createArticleComment
     );
 };
 

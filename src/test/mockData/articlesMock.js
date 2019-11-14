@@ -17,4 +17,7 @@ export default {
   validArticleComment: {
     comment: 'my first article of the day'
   },
+  invalidArticleComment: {
+    comment: 'm'
+  },
 };
