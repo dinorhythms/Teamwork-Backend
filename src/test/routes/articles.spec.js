@@ -6,7 +6,7 @@ import articlesMock from '../mockData/articlesMock';
 import { generateToken } from '../../services/authServices';
 
 const {
-  validArticle, invalidTagArticle, validArticleTwo
+  validArticle, invalidTagArticle, validArticleTwo, validArticleComment
 } = articlesMock;
 
 const BACKEND_BASE_URL = '/api/v1';
@@ -202,6 +202,42 @@ describe('ARTICLES', () => {
           expect(res.status).to.equal(201);
           expect(res.body).to.have.property('status').that.equal('success');
           expect(data).to.have.property('articleId');
+          done(err);
+        });
+    });
+  });
+
+  describe('POST /articles/articleId/{comment}', () => {
+    const createArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/2/comment`;
+    it('should allow admin post article comment', (done) => {
+      chai
+        .request(app)
+        .post(createArticleCommentEndpoint)
+        .set('authorization', adminToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comment');
+          done(err);
+        });
+    });
+  });
+
+  describe('POST /articles/articleId/{comment}', () => {
+    const createArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/2/comment`;
+    it('should allow user/employee post article comment', (done) => {
+      chai
+        .request(app)
+        .post(createArticleCommentEndpoint)
+        .set('authorization', userToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comment');
           done(err);
         });
     });
