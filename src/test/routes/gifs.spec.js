@@ -152,4 +152,44 @@ describe('GIFS', () => {
         });
     });
   });
+
+  describe('DELETE /gifs/:gifId', () => {
+    const deleteGifEndpoint = `${BACKEND_BASE_URL}/gifs/1`;
+    before(async () => {
+      adminToken = generateToken({ id: 1, roleId: 1 });
+      userToken = generateToken({ id: 2, roleId: 2 });
+    });
+
+    it('should not allow another user delete employees gif', (done) => {
+      chai
+        .request(app)
+        .delete(deleteGifEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+
+    it('should allow user delete created gif', (done) => {
+      const stub = sinon
+        .stub(uploader, 'destroy')
+        .callsFake(() => Promise.resolve({ result: 'ok' }));
+      chai
+        .request(app)
+        .delete(deleteGifEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body)
+            .to.have.property('status')
+            .that.equal('success');
+          expect(data).to.have.property('gifId');
+          done(err);
+          stub.restore();
+        });
+    });
+  });
 });

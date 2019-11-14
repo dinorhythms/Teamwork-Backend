@@ -5,11 +5,11 @@ export default (schema) => (req, res, next) => {
   if (!schema) return next();
 
   const {
-    body, params, query, imageUrl
+    body, params, query, file
   } = req;
 
   Joi.validate({
-    ...body, ...params, ...query, imageUrl
+    ...body, ...params, ...query, ...file
   }, schema, {
     abortEarly: false,
     stripUnknown: true,

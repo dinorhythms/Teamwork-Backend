@@ -22,7 +22,9 @@ const messages = {
   forbidden: 'You are not authorized to perform this operation',
   unauthorized: 'You do not have authorization',
   commentAlreadyDeleted: 'Comment already deleted',
-  gifCreated: 'GIF image successfully posted',
+  gifCreated: 'GIF post successfully posted',
+  gifDeleted: 'Gif post successfully deleted',
+  gifDeleteError: 'Gif post delete not successful',
   imageUploadError: 'GIF upload error',
 };
 

@@ -47,7 +47,7 @@ const create = async (req, res) => {
 };
 
 /**
- * article create controller
+ * article update controller
  * @param {Object} req - server request
  * @param {Object} res - server response
  * @returns {Object} - custom response
@@ -79,6 +79,13 @@ const update = async (req, res) => {
   }
 };
 
+
+/**
+ * article delete controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
 const deleteArticle = async (req, res) => {
   try {
     const { articleId } = req.params;
