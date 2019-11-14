@@ -1,18 +1,5 @@
 import { query } from '../db';
 
-const getAll = async (table) => {
-  try {
-    const getAllQuery = `SELECT * FROM ${table}`;
-    const { rows, rowCount } = await query(getAllQuery);
-    if (rowCount > 0) {
-      return rows;
-    }
-    return null;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
 const getById = async (table, id) => {
   try {
     const getQuery = `SELECT * FROM ${table} WHERE id = ${id}`;
@@ -39,9 +26,9 @@ const getAllByOption = async (table, option) => {
   }
 };
 
-const getSelectedByOption = async (table, columns, option) => {
+const getSelectedByOption = async (table, columns) => {
   try {
-    const getOptionQuery = `SELECT ${columns} FROM ${table} WHERE ${option}`;
+    const getOptionQuery = `SELECT ${columns} FROM ${table}`;
     const { rows, rowCount } = await query(getOptionQuery);
     if (rowCount > 0) {
       return rows;
@@ -83,6 +70,6 @@ const deleteRecord = async (table, id) => {
 };
 
 export {
-  getAll, getById, getAllByOption, getSelectedByOption,
+  getById, getAllByOption, getSelectedByOption,
   updateRecord, insertRecord, deleteRecord
 };

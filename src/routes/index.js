@@ -3,6 +3,7 @@ import response from '../utils/response';
 import authRoute from './auth';
 import articlesRoute from './articles';
 import gifsRoute from './gifs';
+import feedRoute from './feed';
 
 const routes = (router) => {
   router
@@ -47,6 +48,9 @@ const routes = (router) => {
 
   // gifs routes
   gifsRoute(router);
+
+  // feed routes
+  feedRoute(router);
 };
 
 export default routes;
