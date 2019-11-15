@@ -11,11 +11,18 @@ import {
   deleteArticleSchema,
   createArticleCommentSchema,
   getArticleSchema,
-  getArticleByTagSchema
+  getArticleByTagSchema,
+  flagArticleCommentSchema
 } from '../validation/articlesSchema';
 
 const {
-  create, update, deleteArticle, getArticle, getArticlesByTag
+  create,
+  update,
+  deleteArticle,
+  getArticle,
+  getArticlesByTag,
+  flagArticle,
+  flagComment
 } = articlesController;
 const { createArticleComment } = commentsController;
 
@@ -289,6 +296,73 @@ const articlesRoute = (router) => {
       validate(getArticleByTagSchema),
       getArticlesByTag
     );
+
+  router
+    .route('/articles/flag/:articleId')
+    /**
+     * @swagger
+     * /api/v1/articles/flag/{articleId}:
+     *   patch:
+     *     tags:
+     *       - Flags
+     *     description: Flag articles
+     *     parameters:
+     *       - in: path
+     *         name: articleId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Article flagged successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .patch(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(getArticleSchema),
+      flagArticle
+    );
+
+  router
+    .route('/articles/flag/comment/:commentId')
+    /**
+     * @swagger
+     * /api/v1/articles/flag/comment/{commentId}:
+     *   patch:
+     *     tags:
+     *       - Flags
+     *     description: Flag comment
+     *     parameters:
+     *       - in: path
+     *         name: commentId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Comment ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Article post comment flagged successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .patch(checkToken, authorize(EMPLOYEE), validate(flagArticleCommentSchema), flagComment);
 };
 
 export default articlesRoute;

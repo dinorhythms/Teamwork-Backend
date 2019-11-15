@@ -259,11 +259,65 @@ describe('GIFS', () => {
           done(err);
         });
     });
-    it('should return article not found', (done) => {
+    it('should return gif post not found', (done) => {
       chai
         .request(app)
         .get(badGetGifEndpoint)
         .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
+
+  describe('PATCH /gifs/flag/gifId/', () => {
+    const flagGifEndpoint = `${BACKEND_BASE_URL}/gifs/flag/2`;
+    const badFlagGifEndpoint = `${BACKEND_BASE_URL}/gifs/flag/20`;
+    it('should allow employee flag a gif post', (done) => {
+      chai
+        .request(app)
+        .patch(flagGifEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+    it('should return gif post not found', (done) => {
+      chai
+        .request(app)
+        .patch(badFlagGifEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
+
+  describe('PATCH /gifs/flag/comment/gifId/', () => {
+    const flagGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/flag/comment/1`;
+    const badFlagGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/flag/comment/20`;
+    it('should allow employee flag a gif post', (done) => {
+      chai
+        .request(app)
+        .patch(flagGifCommentEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+    it('should return gif post not found', (done) => {
+      chai
+        .request(app)
+        .patch(badFlagGifCommentEndpoint)
+        .set('authorization', userToken)
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.have.property('status').that.equal('error');

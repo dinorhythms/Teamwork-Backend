@@ -307,4 +307,58 @@ describe('ARTICLES', () => {
         });
     });
   });
+
+  describe('PATCH /articles/flag/articleId/', () => {
+    const flagArticleEndpoint = `${BACKEND_BASE_URL}/articles/flag/2`;
+    const badFlagArticleEndpoint = `${BACKEND_BASE_URL}/articles/flag/20`;
+    it('should allow employee flag an article', (done) => {
+      chai
+        .request(app)
+        .patch(flagArticleEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+    it('should return article not found', (done) => {
+      chai
+        .request(app)
+        .patch(badFlagArticleEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
+
+  describe('PATCH /articles/flag/comment/articleId/', () => {
+    const flagArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/flag/comment/1`;
+    const badFlagArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/flag/comment/20`;
+    it('should allow employee flag a article comment', (done) => {
+      chai
+        .request(app)
+        .patch(flagArticleCommentEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+    it('should return article not found', (done) => {
+      chai
+        .request(app)
+        .patch(badFlagArticleCommentEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
 });

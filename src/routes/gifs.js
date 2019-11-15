@@ -11,10 +11,13 @@ import {
   createGifSchema,
   deleteGifSchema,
   createGifCommentSchema,
-  getGifSchema
+  getGifSchema,
+  flagGifCommentSchema
 } from '../validation/gifsSchema';
 
-const { create, deleteGif, getGif } = gifsController;
+const {
+  create, deleteGif, getGif, flagGif, flagComment
+} = gifsController;
 const { createGifComment } = commentsController;
 
 const { EMPLOYEE } = roles;
@@ -202,12 +205,69 @@ const gifsRoute = (router) => {
      *       - bearerAuth: []
      */
 
-    .get(
-      checkToken,
-      authorize(EMPLOYEE),
-      validate(getGifSchema),
-      getGif
-    );
+    .get(checkToken, authorize(EMPLOYEE), validate(getGifSchema), getGif);
+
+  router
+    .route('/gifs/flag/:gifId')
+    /**
+     * @swagger
+     * /api/v1/gifs/flag/{gifId}:
+     *   patch:
+     *     tags:
+     *       - Flags
+     *     description: Flag Gif post
+     *     parameters:
+     *       - in: path
+     *         name: gifId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Gif post ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Gif post flagged successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .patch(checkToken, authorize(EMPLOYEE), validate(getGifSchema), flagGif);
+
+  router
+    .route('/gifs/flag/comment/:commentId')
+    /**
+     * @swagger
+     * /api/v1/gifs/flag/comment/{commentId}:
+     *   patch:
+     *     tags:
+     *       - Flags
+     *     description: Flag comment
+     *     parameters:
+     *       - in: path
+     *         name: commentId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Comment ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Gif post comment flagged successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .patch(checkToken, authorize(EMPLOYEE), validate(flagGifCommentSchema), flagComment);
 };
 
 export default gifsRoute;
