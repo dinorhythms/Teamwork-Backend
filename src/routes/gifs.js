@@ -7,9 +7,14 @@ import multerUploads from '../middlewares/multer';
 import validate from '../middlewares/validator';
 import uploadImage, { deleteImage } from '../middlewares/imageUploader';
 import roles from '../utils/roles';
-import { createGifSchema, deleteGifSchema, createGifCommentSchema } from '../validation/gifsSchema';
+import {
+  createGifSchema,
+  deleteGifSchema,
+  createGifCommentSchema,
+  getGifSchema
+} from '../validation/gifsSchema';
 
-const { create, deleteGif } = gifsController;
+const { create, deleteGif, getGif } = gifsController;
 const { createGifComment } = commentsController;
 
 const { EMPLOYEE } = roles;
@@ -166,6 +171,42 @@ const gifsRoute = (router) => {
       authorize(EMPLOYEE),
       validate(createGifCommentSchema),
       createGifComment
+    );
+
+  router
+    .route('/gifs/:gifId')
+    /**
+     * @swagger
+     * /api/v1/gifs/{gifId}:
+     *   get:
+     *     tags:
+     *       - Gifs
+     *     description: Get gif post by Id
+     *     parameters:
+     *       - in: path
+     *         name: gifId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Gif ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Gif post received successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .get(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(getGifSchema),
+      getGif
     );
 };
 

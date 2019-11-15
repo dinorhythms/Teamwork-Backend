@@ -219,16 +219,6 @@ const articlesRoute = (router) => {
 
   router
     .route('/articles/:articleId')
-    /**
-     * @swagger
-     * components:
-     *  schemas:
-     *    ArticleComment:
-     *      properties:
-     *        comment:
-     *          type: string
-     */
-
   /**
      * @swagger
      * /api/v1/articles/{articleId}:
@@ -247,7 +237,7 @@ const articlesRoute = (router) => {
      *       - application/json
      *     responses:
      *       200:
-     *         description: comment created successfully
+     *         description: Article received successfully
      *       403:
      *         description: Unauthorized
      *       500:

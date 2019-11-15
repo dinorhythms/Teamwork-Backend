@@ -242,4 +242,33 @@ describe('GIFS', () => {
         });
     });
   });
+
+  describe('GET /gifs/gifId/', () => {
+    const getGifEndpoint = `${BACKEND_BASE_URL}/gifs/2`;
+    const badGetGifEndpoint = `${BACKEND_BASE_URL}/gifs/20`;
+    it('should allow employee get gif posts', (done) => {
+      chai
+        .request(app)
+        .get(getGifEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comments');
+          done(err);
+        });
+    });
+    it('should return article not found', (done) => {
+      chai
+        .request(app)
+        .get(badGetGifEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
 });

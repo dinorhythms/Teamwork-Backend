@@ -6,14 +6,16 @@ import {
   updateRecord,
   getAllByOption,
   getById,
-  deleteRecord
+  deleteRecord,
+  getSelectedByOption
 } from '../services/dbServices';
 
 const {
-  gifCreated, gifExists, invalidTagId, gifDeleted
+  gifCreated, gifExists, invalidTagId, gifDeleted, gifNotFound
 } = messages;
 const gifModel = 'gifs';
 const tagModel = 'tags';
+const commentModel = ' gifcomments';
 
 /**
  * gifs create controller
@@ -83,7 +85,33 @@ const deleteGif = async (req, res) => {
   }
 };
 
+/**
+ * get article controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const getGif = async (req, res) => {
+  try {
+    const { gifId } = req.params;
+    const gif = await getById(gifModel, gifId);
+    const comments = await getSelectedByOption(commentModel, 'id AS commentId, comment, authorid', `WHERE gifid='${gifId}'`) || [];
+    if (!gif) return errorResponse(res, 400, 'error', gifNotFound);
+    const gifData = {
+      id: gif.id,
+      createdOn: gif.createdon,
+      title: gif.title,
+      url: gif.imageurl,
+      comments
+    };
+    return response(res, 200, 'success', gifData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
   create,
-  deleteGif
+  deleteGif,
+  getGif
 };
