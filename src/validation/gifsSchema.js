@@ -30,10 +30,16 @@ const flagGifCommentSchema = Joi.object({
   commentId: JoiValidator.validateString().required()
 });
 
+const deleteFlagGifCommentSchema = Joi.object({
+  gifId: JoiValidator.validateString().required(),
+  commentId: JoiValidator.validateString().required()
+});
+
 export {
   createGifSchema,
   deleteGifSchema,
   createGifCommentSchema,
   getGifSchema,
-  flagGifCommentSchema
+  flagGifCommentSchema,
+  deleteFlagGifCommentSchema
 };

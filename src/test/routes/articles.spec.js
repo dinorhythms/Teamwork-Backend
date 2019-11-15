@@ -6,7 +6,7 @@ import articlesMock from '../mockData/articlesMock';
 import { generateToken } from '../../services/authServices';
 
 const {
-  validArticle, invalidTagArticle, validArticleTwo, validArticleComment
+  validArticle, invalidTagArticle, validArticleTwo, validArticleComment, validArticleComment2
 } = articlesMock;
 
 const BACKEND_BASE_URL = '/api/v1';
@@ -177,36 +177,6 @@ describe('ARTICLES', () => {
     });
   });
 
-  describe('DELETE /articles/articleId', () => {
-    const deleteArticleEndpoint = `${BACKEND_BASE_URL}/articles/1`;
-    it('should allow only author employee delete article', (done) => {
-      chai
-        .request(app)
-        .delete(deleteArticleEndpoint)
-        .set('authorization', userToken)
-        .send(validArticleTwo)
-        .end((err, res) => {
-          expect(res.status).to.equal(403);
-          expect(res.body).to.have.property('status').that.equal('error');
-          done(err);
-        });
-    });
-    it('should allow employee delete article', (done) => {
-      chai
-        .request(app)
-        .delete(deleteArticleEndpoint)
-        .set('authorization', adminToken)
-        .send(validArticle)
-        .end((err, res) => {
-          const { data } = res.body;
-          expect(res.status).to.equal(201);
-          expect(res.body).to.have.property('status').that.equal('success');
-          expect(data).to.have.property('articleId');
-          done(err);
-        });
-    });
-  });
-
   describe('POST /articles/articleId/{comment}', () => {
     const createArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/2/comment`;
     const badcreateArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/20/comment`;
@@ -216,6 +186,20 @@ describe('ARTICLES', () => {
         .post(createArticleCommentEndpoint)
         .set('authorization', adminToken)
         .send(validArticleComment)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comment');
+          done(err);
+        });
+    });
+    it('should allow admin post another article comment', (done) => {
+      chai
+        .request(app)
+        .post(createArticleCommentEndpoint)
+        .set('authorization', adminToken)
+        .send(validArticleComment2)
         .end((err, res) => {
           const { data } = res.body;
           expect(res.status).to.equal(201);
@@ -357,6 +341,148 @@ describe('ARTICLES', () => {
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
+
+  describe('DELETE /articles/articleId/comment/commentId/', () => {
+    const deleteFlagArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/1/comment/1`;
+    const badDeleteFlagArticleCommentEndpoint = `${BACKEND_BASE_URL}/articles/20/comment/20`;
+    const badDeleteFlagArticleCommentEndpoint2 = `${BACKEND_BASE_URL}/articles/1/comment/20`;
+    const badDeleteFlagArticleCommentEndpoint3 = `${BACKEND_BASE_URL}/articles/1/comment/2`;
+    it('should disallow user/employee delete flagged article comment', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagArticleCommentEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should return article not found error', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagArticleCommentEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should return comment not found error', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagArticleCommentEndpoint2)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should not allow admin delete unflagged article comment', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagArticleCommentEndpoint3)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should allow admin delete flagged article comment', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagArticleCommentEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+  });
+
+  describe('DELETE /articles/articleId/admin', () => {
+    const deleteFlagArticleEndpoint = `${BACKEND_BASE_URL}/articles/2/admin`;
+    const badDeleteFlagArticleEndpoint = `${BACKEND_BASE_URL}/articles/20/admin`;
+    const badDeleteFlagArticleEndpoint2 = `${BACKEND_BASE_URL}/articles/3/admin`;
+    it('should disallow user/employee delete flagged article comment', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagArticleEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should return article not found error', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagArticleEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should not allow admin delete unflagged article', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagArticleEndpoint2)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should allow admin delete flagged article', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagArticleEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+  });
+
+  describe('DELETE /articles/articleId', () => {
+    const deleteArticleEndpoint = `${BACKEND_BASE_URL}/articles/1`;
+    it('should allow only author employee delete article', (done) => {
+      chai
+        .request(app)
+        .delete(deleteArticleEndpoint)
+        .set('authorization', userToken)
+        .send(validArticleTwo)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should allow employee delete article', (done) => {
+      chai
+        .request(app)
+        .delete(deleteArticleEndpoint)
+        .set('authorization', adminToken)
+        .send(validArticle)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('articleId');
           done(err);
         });
     });

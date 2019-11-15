@@ -7,7 +7,8 @@ import {
 
 const {
   articleExists, articleCreated, invalidTagId, articleUpdated, articleDeleted,
-  articleNotFound, flaggedSuccess, commentNotFound
+  articleNotFound, flaggedSuccess, commentNotFound, commentNotFlagged, commentdeleted,
+  articleNotFlagged
 } = messages;
 const articleModel = 'articles';
 const tagModel = 'tags';
@@ -193,7 +194,7 @@ const flagComment = async (req, res) => {
     const comment = {
       message: flaggedSuccess,
       commentId: flagged.id,
-      gifId: flagged.gifid,
+      articleId: flagged.articleid,
       authorId: flagged.authorid,
       comment: flagged.title,
       flagged: flagged.flagged,
@@ -206,6 +207,74 @@ const flagComment = async (req, res) => {
   }
 };
 
+/**
+ * delete flag article comment controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const deleteFlagComment = async (req, res) => {
+  try {
+    const { articleId, commentId } = req.params;
+    const article = await getById(articleModel, articleId);
+    if (!article) return errorResponse(res, 400, 'error', articleNotFound);
+    // check flag
+    const flaggedComment = await getById(commentModel, commentId);
+    if (!flaggedComment) return errorResponse(res, 400, 'error', commentNotFound);
+    if (flaggedComment && !flaggedComment.flagged) return errorResponse(res, 400, 'error', commentNotFlagged);
+    const comment = await deleteRecord(commentModel, commentId);
+    const commentData = {
+      message: commentdeleted,
+      commentId: comment.id,
+      articleId: comment.articleid,
+      authorId: comment.authorid,
+      comment: comment.title,
+      flagged: comment.flagged,
+      createdOn: comment.createdon,
+      updatedOn: comment.updatedon
+    };
+    return response(res, 200, 'success', commentData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
+/**
+ * delete flag article controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const deleteFlagArticle = async (req, res) => {
+  try {
+    const { articleId } = req.params;
+    const article = await getById(articleModel, articleId);
+    if (!article) return errorResponse(res, 400, 'error', articleNotFound);
+    // check flag
+    if (article && !article.flagged) return errorResponse(res, 400, 'error', articleNotFlagged);
+    const deletedArticle = await deleteRecord(articleModel, articleId);
+    const articleData = {
+      message: articleDeleted,
+      articleId: deletedArticle.articleid,
+      authorId: deletedArticle.authorid,
+      flagged: deletedArticle.flagged,
+      createdOn: deletedArticle.createdon,
+      updatedOn: deletedArticle.updatedon
+    };
+    return response(res, 200, 'success', articleData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
-  create, update, deleteArticle, getArticle, getArticlesByTag, flagArticle, flagComment
+  create,
+  update,
+  deleteArticle,
+  getArticle,
+  getArticlesByTag,
+  flagArticle,
+  flagComment,
+  deleteFlagComment,
+  deleteFlagArticle
 };

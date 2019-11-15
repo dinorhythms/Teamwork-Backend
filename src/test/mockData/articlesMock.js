@@ -17,6 +17,9 @@ export default {
   validArticleComment: {
     comment: 'my first article of the day'
   },
+  validArticleComment2: {
+    comment: 'my first article of the day two'
+  },
   invalidArticleComment: {
     comment: 'm'
   },

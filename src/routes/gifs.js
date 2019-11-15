@@ -12,15 +12,16 @@ import {
   deleteGifSchema,
   createGifCommentSchema,
   getGifSchema,
-  flagGifCommentSchema
+  flagGifCommentSchema,
+  deleteFlagGifCommentSchema
 } from '../validation/gifsSchema';
 
 const {
-  create, deleteGif, getGif, flagGif, flagComment
+  create, deleteGif, getGif, flagGif, flagComment, deleteFlagComment, deleteFlagGif
 } = gifsController;
 const { createGifComment } = commentsController;
 
-const { EMPLOYEE } = roles;
+const { EMPLOYEE, ADMIN } = roles;
 
 const gifsRoute = (router) => {
   router
@@ -268,6 +269,84 @@ const gifsRoute = (router) => {
      */
 
     .patch(checkToken, authorize(EMPLOYEE), validate(flagGifCommentSchema), flagComment);
+
+  router
+    .route('/gifs/:gifId/comment/:commentId')
+    /**
+     * @swagger
+     * /api/v1/gifs/{gifId}/comment/{commentId}:
+     *   delete:
+     *     tags:
+     *       - Flags
+     *     description: Delete flagged Gif post Comment
+     *     parameters:
+     *       - in: path
+     *         name: gifId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Gif ID
+     *       - in: path
+     *         name: commentId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Comment ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Gif post comment deleted successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .delete(
+      checkToken,
+      authorize(ADMIN),
+      validate(deleteFlagGifCommentSchema),
+      deleteFlagComment
+    );
+
+  router
+    .route('/gifs/:gifId/admin')
+    /**
+     * @swagger
+     * /api/v1/gifs/{gifId}/admin:
+     *   delete:
+     *     tags:
+     *       - Flags
+     *     description: Delete flagged Gif Post
+     *     parameters:
+     *       - in: path
+     *         name: gifId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Gif ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Gif post deleted successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .delete(
+      checkToken,
+      authorize(ADMIN),
+      validate(getGifSchema),
+      deleteFlagGif
+    );
 };
 
 export default gifsRoute;
