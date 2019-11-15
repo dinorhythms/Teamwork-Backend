@@ -11,7 +11,8 @@ import {
 } from '../services/dbServices';
 
 const {
-  gifCreated, gifExists, invalidTagId, gifDeleted, gifNotFound, flaggedSuccess, commentNotFound
+  gifCreated, gifExists, invalidTagId, gifDeleted, gifNotFound,
+  flaggedSuccess, commentNotFound, commentNotFlagged, commentdeleted, gifNotFlagged
 } = messages;
 const gifModel = 'gifs';
 const tagModel = 'tags';
@@ -167,10 +168,72 @@ const flagComment = async (req, res) => {
   }
 };
 
+/**
+ * delete flag article comment controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const deleteFlagComment = async (req, res) => {
+  try {
+    const { gifId, commentId } = req.params;
+    const gif = await getById(gifModel, gifId);
+    if (!gif) return errorResponse(res, 400, 'error', gifNotFound);
+    // check flag
+    const flaggedComment = await getById(commentModel, commentId);
+    if (!flaggedComment) return errorResponse(res, 400, 'error', commentNotFound);
+    if (flaggedComment && !flaggedComment.flagged) return errorResponse(res, 400, 'error', commentNotFlagged);
+    const comment = await deleteRecord(commentModel, commentId);
+    const commentData = {
+      message: commentdeleted,
+      commentId: comment.id,
+      gifId: comment.gifid,
+      authorId: comment.authorid,
+      comment: comment.title,
+      flagged: comment.flagged,
+      createdOn: comment.createdon,
+      updatedOn: comment.updatedon
+    };
+    return response(res, 200, 'success', commentData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
+/**
+ * delete flag gif post controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const deleteFlagGif = async (req, res) => {
+  try {
+    const { gifId } = req.params;
+    const gif = await getById(gifModel, gifId);
+    if (!gif) return errorResponse(res, 400, 'error', gifNotFound);
+    // check flag
+    if (gif && !gif.flagged) return errorResponse(res, 400, 'error', gifNotFlagged);
+    const deletedGif = await deleteRecord(gifModel, gifId);
+    const gifData = {
+      message: gifDeleted,
+      articleId: deletedGif.articleid,
+      authorId: deletedGif.authorid,
+      flagged: deletedGif.flagged,
+      createdOn: deletedGif.createdon,
+      updatedOn: deletedGif.updatedon
+    };
+    return response(res, 200, 'success', gifData);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
   create,
   deleteGif,
   getGif,
   flagGif,
-  flagComment
+  flagComment,
+  deleteFlagComment,
+  deleteFlagGif
 };

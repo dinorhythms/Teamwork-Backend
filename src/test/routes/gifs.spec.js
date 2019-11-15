@@ -158,50 +158,24 @@ describe('GIFS', () => {
     });
   });
 
-  describe('DELETE /gifs/:gifId', () => {
-    const deleteGifEndpoint = `${BACKEND_BASE_URL}/gifs/1`;
-    before(async () => {
-      adminToken = generateToken({ id: 1, roleId: 1 });
-      userToken = generateToken({ id: 2, roleId: 2 });
-    });
-
-    it('should not allow another user delete employees gif', (done) => {
-      chai
-        .request(app)
-        .delete(deleteGifEndpoint)
-        .set('authorization', userToken)
-        .end((err, res) => {
-          expect(res.status).to.equal(403);
-          expect(res.body).to.have.property('status').that.equal('error');
-          done(err);
-        });
-    });
-
-    it('should allow user delete created gif', (done) => {
-      const stub = sinon
-        .stub(uploader, 'destroy')
-        .callsFake(() => Promise.resolve({ result: 'ok' }));
-      chai
-        .request(app)
-        .delete(deleteGifEndpoint)
-        .set('authorization', adminToken)
-        .end((err, res) => {
-          const { data } = res.body;
-          expect(res.status).to.equal(201);
-          expect(res.body)
-            .to.have.property('status')
-            .that.equal('success');
-          expect(data).to.have.property('gifId');
-          done(err);
-          stub.restore();
-        });
-    });
-  });
-
   describe('POST /gifs/gifId/{comment}', () => {
     const createGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/2/comment`;
     const badcreateGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/20/comment`;
     it('should allow admin post gif comment', (done) => {
+      chai
+        .request(app)
+        .post(createGifCommentEndpoint)
+        .set('authorization', adminToken)
+        .send(validArticleComment)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('status').that.equal('success');
+          expect(data).to.have.property('comment');
+          done(err);
+        });
+    });
+    it('should allow admin post another gif comment', (done) => {
       chai
         .request(app)
         .post(createGifCommentEndpoint)
@@ -322,6 +296,158 @@ describe('GIFS', () => {
           expect(res.status).to.equal(400);
           expect(res.body).to.have.property('status').that.equal('error');
           done(err);
+        });
+    });
+  });
+
+  describe('DELETE /gifs/gifId/comment/commentId/', () => {
+    const deleteFlagGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/1/comment/1`;
+    const badDeleteFlagGifCommentEndpoint = `${BACKEND_BASE_URL}/gifs/20/comment/20`;
+    const badDeleteFlagGifCommentEndpoint2 = `${BACKEND_BASE_URL}/gifs/1/comment/20`;
+    const badDeleteFlagGifCommentEndpoint3 = `${BACKEND_BASE_URL}/gifs/1/comment/2`;
+    it('should disallow user/employee delete flagged gif post comment', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagGifCommentEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should return gif not found error', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagGifCommentEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should return comment not found error', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagGifCommentEndpoint2)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should not allow admin delete unflagged gif post comment', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagGifCommentEndpoint3)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should allow admin delete flagged gif comment', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagGifCommentEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+  });
+
+  describe('DELETE /gifs/gifId/admin', () => {
+    const deleteFlagGifEndpoint = `${BACKEND_BASE_URL}/gifs/2/admin`;
+    const badDeleteFlagGifEndpoint = `${BACKEND_BASE_URL}/gifs/20/admin`;
+    const badDeleteFlagGifEndpoint2 = `${BACKEND_BASE_URL}/gifs/1/admin`;
+    it('should disallow user/employee delete flagged gif', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagGifEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should return article not found error', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagGifEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should not allow admin delete unflagged gif post', (done) => {
+      chai
+        .request(app)
+        .delete(badDeleteFlagGifEndpoint2)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+    it('should allow admin delete flagged gif post', (done) => {
+      chai
+        .request(app)
+        .delete(deleteFlagGifEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+  });
+
+  describe('DELETE /gifs/:gifId', () => {
+    const deleteGifEndpoint = `${BACKEND_BASE_URL}/gifs/1`;
+    before(async () => {
+      adminToken = generateToken({ id: 1, roleId: 1 });
+      userToken = generateToken({ id: 2, roleId: 2 });
+    });
+
+    it('should not allow another user delete employees gif', (done) => {
+      chai
+        .request(app)
+        .delete(deleteGifEndpoint)
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+
+    it('should allow user delete created gif', (done) => {
+      const stub = sinon
+        .stub(uploader, 'destroy')
+        .callsFake(() => Promise.resolve({ result: 'ok' }));
+      chai
+        .request(app)
+        .delete(deleteGifEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          const { data } = res.body;
+          expect(res.status).to.equal(201);
+          expect(res.body)
+            .to.have.property('status')
+            .that.equal('success');
+          expect(data).to.have.property('gifId');
+          done(err);
+          stub.restore();
         });
     });
   });

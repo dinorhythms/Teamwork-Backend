@@ -12,7 +12,8 @@ import {
   createArticleCommentSchema,
   getArticleSchema,
   getArticleByTagSchema,
-  flagArticleCommentSchema
+  flagArticleCommentSchema,
+  deleteFlagArticleCommentSchema
 } from '../validation/articlesSchema';
 
 const {
@@ -22,11 +23,13 @@ const {
   getArticle,
   getArticlesByTag,
   flagArticle,
-  flagComment
+  flagComment,
+  deleteFlagComment,
+  deleteFlagArticle
 } = articlesController;
 const { createArticleComment } = commentsController;
 
-const { EMPLOYEE } = roles;
+const { EMPLOYEE, ADMIN } = roles;
 
 const articlesRoute = (router) => {
   router
@@ -362,7 +365,90 @@ const articlesRoute = (router) => {
      *       - bearerAuth: []
      */
 
-    .patch(checkToken, authorize(EMPLOYEE), validate(flagArticleCommentSchema), flagComment);
+    .patch(
+      checkToken,
+      authorize(EMPLOYEE),
+      validate(flagArticleCommentSchema),
+      flagComment
+    );
+
+  router
+    .route('/articles/:articleId/comment/:commentId')
+    /**
+     * @swagger
+     * /api/v1/articles/{articleId}/comment/{commentId}:
+     *   delete:
+     *     tags:
+     *       - Flags
+     *     description: Delete flagged Article Comment
+     *     parameters:
+     *       - in: path
+     *         name: articleId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
+     *       - in: path
+     *         name: commentId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Comment ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Article post comment deleted successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .delete(
+      checkToken,
+      authorize(ADMIN),
+      validate(deleteFlagArticleCommentSchema),
+      deleteFlagComment
+    );
+
+  router
+    .route('/articles/:articleId/admin')
+    /**
+     * @swagger
+     * /api/v1/articles/{articleId}/admin:
+     *   delete:
+     *     tags:
+     *       - Flags
+     *     description: Delete flagged Article
+     *     parameters:
+     *       - in: path
+     *         name: articleId
+     *         required: true
+     *         schema:
+     *          type: integer
+     *         description: The Article ID
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Article deleted successfully
+     *       403:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server error
+     *     security:
+     *       - bearerAuth: []
+     */
+
+    .delete(
+      checkToken,
+      authorize(ADMIN),
+      validate(getArticleSchema),
+      deleteFlagArticle
+    );
 };
 
 export default articlesRoute;

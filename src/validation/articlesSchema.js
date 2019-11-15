@@ -49,6 +49,11 @@ const flagArticleCommentSchema = Joi.object({
   commentId: JoiValidator.validateString().required()
 });
 
+const deleteFlagArticleCommentSchema = Joi.object({
+  articleId: JoiValidator.validateString().required(),
+  commentId: JoiValidator.validateString().required()
+});
+
 export {
   createArticleSchema,
   updateArticleSchema,
@@ -56,5 +61,6 @@ export {
   createArticleCommentSchema,
   getArticleSchema,
   getArticleByTagSchema,
-  flagArticleCommentSchema
+  flagArticleCommentSchema,
+  deleteFlagArticleCommentSchema
 };
