@@ -11,12 +11,24 @@ const createGifSchema = Joi.object({
 });
 
 const deleteGifSchema = Joi.object({
-  gifId: JoiValidator.validateNumber().required(),
+  gifId: JoiValidator.validateNumber().required()
 });
 
 const createGifCommentSchema = Joi.object({
-  comment: JoiValidator.validateString().min(2).max(256).required(),
-  gifId: JoiValidator.validateString().required(),
+  comment: JoiValidator.validateString()
+    .min(2)
+    .max(256)
+    .required(),
+  gifId: JoiValidator.validateString().required()
 });
 
-export { createGifSchema, deleteGifSchema, createGifCommentSchema };
+const getGifSchema = Joi.object({
+  gifId: JoiValidator.validateString().required()
+});
+
+export {
+  createGifSchema,
+  deleteGifSchema,
+  createGifCommentSchema,
+  getGifSchema
+};
