@@ -130,6 +130,23 @@ const getArticle = async (req, res) => {
   }
 };
 
+/**
+ * get article by tag controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const getArticlesByTag = async (req, res) => {
+  try {
+    const { tagId } = req.params;
+    const articles = await getSelectedByOption(articleModel, 'id, article, authorid, title', `WHERE tagid='${tagId}'`);
+    if (!articles) return errorResponse(res, 400, 'error', articleNotFound);
+    return response(res, 200, 'success', articles);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
-  create, update, deleteArticle, getArticle
+  create, update, deleteArticle, getArticle, getArticlesByTag
 };
