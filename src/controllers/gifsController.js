@@ -11,7 +11,7 @@ import {
 } from '../services/dbServices';
 
 const {
-  gifCreated, gifExists, invalidTagId, gifDeleted, gifNotFound
+  gifCreated, gifExists, invalidTagId, gifDeleted, gifNotFound, flaggedSuccess, commentNotFound
 } = messages;
 const gifModel = 'gifs';
 const tagModel = 'tags';
@@ -110,8 +110,67 @@ const getGif = async (req, res) => {
   }
 };
 
+/**
+ * flag gif post controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const flagGif = async (req, res) => {
+  try {
+    const { gifId } = req.params;
+    const values = "flagged=true, updatedon='NOW()'";
+    const where = `id=${gifId}`;
+    const flagged = await updateRecord(gifModel, values, where);
+    if (!flagged) return errorResponse(res, 400, 'error', gifNotFound);
+    const gif = {
+      message: flaggedSuccess,
+      articleId: flagged.id,
+      title: flagged.title,
+      url: flagged.imageurl,
+      tagId: flagged.tagid,
+      flagged: flagged.flagged,
+      createdOn: flagged.createdon,
+      updatedOn: flagged.updatedon
+    };
+    return response(res, 200, 'success', gif);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
+/**
+ * flag gif post comment controller
+ * @param {Object} req - server request
+ * @param {Object} res - server response
+ * @returns {Object} - custom response
+ */
+const flagComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const values = "flagged=true, updatedon='NOW()'";
+    const where = `id=${commentId}`;
+    const flagged = await updateRecord(commentModel, values, where);
+    if (!flagged) return errorResponse(res, 400, 'error', commentNotFound);
+    const comment = {
+      message: flaggedSuccess,
+      commentId: flagged.id,
+      authorId: flagged.authorid,
+      comment: flagged.title,
+      flagged: flagged.flagged,
+      createdOn: flagged.createdon,
+      updatedOn: flagged.updatedon
+    };
+    return response(res, 200, 'success', comment);
+  } catch (error) {
+    return errorResponse(res, 500, 'error', error.message);
+  }
+};
+
 export default {
   create,
   deleteGif,
-  getGif
+  getGif,
+  flagGif,
+  flagComment
 };

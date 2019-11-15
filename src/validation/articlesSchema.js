@@ -45,11 +45,16 @@ const getArticleByTagSchema = Joi.object({
   tagId: JoiValidator.validateString().required()
 });
 
+const flagArticleCommentSchema = Joi.object({
+  commentId: JoiValidator.validateString().required()
+});
+
 export {
   createArticleSchema,
   updateArticleSchema,
   deleteArticleSchema,
   createArticleCommentSchema,
   getArticleSchema,
-  getArticleByTagSchema
+  getArticleByTagSchema,
+  flagArticleCommentSchema
 };
