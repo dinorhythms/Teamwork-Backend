@@ -280,4 +280,31 @@ describe('ARTICLES', () => {
         });
     });
   });
+
+  describe('GET /articles/tag/tagId/', () => {
+    const getArticleByTagEndpoint = `${BACKEND_BASE_URL}/articles/tag/2`;
+    const badGetArticleByTagEndpoint = `${BACKEND_BASE_URL}/articles/tag/20`;
+    it('should allow employee get article by tag', (done) => {
+      chai
+        .request(app)
+        .get(getArticleByTagEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status').that.equal('success');
+          done(err);
+        });
+    });
+    it('should return article not found', (done) => {
+      chai
+        .request(app)
+        .get(badGetArticleByTagEndpoint)
+        .set('authorization', adminToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('status').that.equal('error');
+          done(err);
+        });
+    });
+  });
 });
