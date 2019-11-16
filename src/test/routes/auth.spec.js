@@ -67,8 +67,8 @@ describe('AUTH', () => {
         });
     });
   });
-  describe('POST /auth/signup', () => {
-    const signupEndpoint = `${BACKEND_BASE_URL}/auth/signup`;
+  describe('POST /auth/create-user', () => {
+    const signupEndpoint = `${BACKEND_BASE_URL}/auth/create-user`;
     let adminToken, userToken;
     before(async () => {
       adminToken = generateToken({ id: 1, roleId: 1 });
