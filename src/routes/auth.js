@@ -14,7 +14,7 @@ const {
 const { ADMIN } = roles;
 
 const authRoute = (router) => {
-  router.route('/auth/signup')
+  router.route('/auth/create-user')
   /**
      * @swagger
      * components:
@@ -41,7 +41,7 @@ const authRoute = (router) => {
 
   /**
      * @swagger
-     * /api/v1/auth/signup:
+     * /api/v1/auth/create-user:
      *   post:
      *     tags:
      *       - Auth
