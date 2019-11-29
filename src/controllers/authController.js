@@ -24,12 +24,12 @@ const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await getAllByOption(userModel, `email='${email}'`);
-    if (!user) return response(res, 404, 'error', { message: userNotFound });
+    if (!user) return errorResponse(res, 400, 'error', userNotFound);
     const { id: userId, password: hash, ...data } = user[0];
     const passwordsMatch = await comparePasswords(password, hash);
-    if (!passwordsMatch) return response(res, 400, 'error', { message: incorrectPassword });
+    if (!passwordsMatch) return errorResponse(res, 400, 'error', incorrectPassword);
     const token = generateToken({ id: userId, roleId: data.roleid });
-    return response(res, 200, 'success', { userId, ...data, token });
+    return response(res, 201, 'success', { userId, ...data, token });
   } catch (error) {
     response(res, 500, 'error', { error: error.message });
   }
@@ -47,7 +47,7 @@ const signUp = async (req, res) => {
       firstname, lastname, email, password, gender, address, jobrole, department
     } = req.body;
     const exists = await getAllByOption(userModel, `email='${email}'`);
-    if (exists) return response(res, 400, 'error', { message: emailExists });
+    if (exists) return errorResponse(res, 400, 'error', emailExists);
     const column = 'email, password, roleid, gender, firstname, lastname, department, address, jobrole, createdon, updatedon';
     const user = `'${email}', '${hashPassword(password, salt)}', '${EMPLOYEE}', '${gender}', '${firstname}', '${lastname}', '${department}', '${address}', '${jobrole}', 'NOW()', 'NOW()'`;
     const createdUser = await insertRecord(userModel, column, user);
@@ -59,7 +59,7 @@ const signUp = async (req, res) => {
       lastName: createdUser.lastname,
       token: generateToken({ id: createdUser.id, roleId: createdUser.roleid }),
     };
-    return response(res, 200, 'success', userData);
+    return response(res, 201, 'success', userData);
   } catch (error) {
     return errorResponse(res, 500, 'error', error.message);
   }

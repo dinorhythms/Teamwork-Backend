@@ -22,7 +22,7 @@ describe('AUTH', () => {
         .send(validAdmin)
         .end((err, res) => {
           const { data } = res.body;
-          expect(res.status).to.equal(200);
+          expect(res.status).to.equal(201);
           expect(res.body).to.have.property('status').that.equal('success');
           expect(data).to.have.property('token');
           done(err);
@@ -36,7 +36,7 @@ describe('AUTH', () => {
         .send(validUser)
         .end((err, res) => {
           const { data } = res.body;
-          expect(res.status).to.equal(200);
+          expect(res.status).to.equal(201);
           expect(res.body).to.have.property('status').that.equal('success');
           expect(data).to.have.property('token');
           done(err);
@@ -49,7 +49,7 @@ describe('AUTH', () => {
         .post(signinEndpoint)
         .send({ ...validUser, email: 'unrecognized@email.com' })
         .end((err, res) => {
-          expect(res.status).to.equal(404);
+          expect(res.status).to.equal(400);
           expect(res.body).to.have.property('status').that.equal('error');
           done(err);
         });
@@ -135,7 +135,6 @@ describe('AUTH', () => {
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.have.property('status').that.equal('error');
-          expect(res.body.data).to.not.have.property('token');
           done(err);
         });
     });
