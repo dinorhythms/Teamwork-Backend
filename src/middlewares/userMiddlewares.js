@@ -33,6 +33,6 @@ export const checkToken = async (req, res, next) => {
     }
     return errorResponse(res, 401, 'error', noToken);
   } catch (error) {
-    return errorResponse(res, 500, 'error', error);
+    return errorResponse(res, 500, 'error', error.message);
   }
 };

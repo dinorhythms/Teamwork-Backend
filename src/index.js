@@ -30,7 +30,7 @@ app.use(cors());
 app.use(express.json());
 
 // Parse application/xwww-
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 // Trim the parsed request body
 app.use(trimmer);
